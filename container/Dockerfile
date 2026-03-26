@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install -y \
     libxshmfence1 \
     curl \
     git \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
 
 # Set Chromium path for agent-browser
@@ -63,10 +64,11 @@ RUN chown -R node:node /workspace && chmod 777 /home/node
 # Switch to non-root user (required for --dangerously-skip-permissions)
 USER node
 
-# Install gstack skills (Garry Tan's open-source engineering team skill pack)
-RUN git clone https://github.com/garrytan/gstack.git /home/node/.claude/skills/gstack \
+# Install bun (required by gstack setup) and gstack skills
+RUN curl -fsSL https://bun.sh/install | bash \
+    && git clone https://github.com/garrytan/gstack.git /home/node/.claude/skills/gstack \
     && cd /home/node/.claude/skills/gstack \
-    && ./setup
+    && PATH="/home/node/.bun/bin:$PATH" ./setup
 
 # Set working directory to group workspace
 WORKDIR /workspace/group
